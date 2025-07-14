@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Cotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+
+<h1 class="mb-4">Bienvenue, {{ user.username }}</h1>
+
+<!-- Liens utiles -->
+<div class="mb-3">
+    <a href="{{ url_for('frequences') }}" class="btn btn-primary">Voir les fréquences</a>
+    <a href="{{ url_for('enregistrer_live') }}" class="btn btn-warning">Live Cote</a>
+    <a href="{{ url_for('statistiques') }}" class="btn btn-secondary">Voir les statistiques</a>
+    <a href="{{ url_for('repartition_globale') }}" class="btn btn-info">Répartition Globale</a>
+    <a href="{{ url_for('export_csv') }}" class="btn btn-success">Exporter CSV</a>
+    <a href="{{ url_for('ajouter_victoire_match') }}" class="btn btn-success">Ajouter une Victoire Match</a>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger float-end">Déconnexion</a>
+</div>
+
+<!-- Formulaire filtre -->
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">Tous les types</option>
+            <option value="gagne_jeu" {% if filtre_type == 'gagne_jeu' %}selected{% endif %}>Gagne dans le jeu</option>
+            <option value="victoire_set" {% if filtre_type == 'victoire_set' %}selected{% endif %}>Victoire Set</option>
+            <option value="gagne_6_tiebreak" {% if filtre_type == 'gagne_6_tiebreak' %}selected{% endif %}>6 jeux Tie-break</option>
+            <option value="victoire_match" {% if filtre_type == 'victoire_match' %}selected{% endif %}>Victoire Match</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="surface" class="form-select">
+            <option value="">Toutes les surfaces</option>
+            <option value="terre" {% if filtre_surface == 'terre' %}selected{% endif %}>Terre</option>
+            <option value="dur" {% if filtre_surface == 'dur' %}selected{% endif %}>Dur</option>
+            <option value="gazon" {% if filtre_surface == 'gazon' %}selected{% endif %}>Gazon</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="sexe" class="form-select">
+            <option value="">Tous les sexes</option>
+            <option value="homme" {% if filtre_sexe == 'homme' %}selected{% endif %}>Homme</option>
+            <option value="femme" {% if filtre_sexe == 'femme' %}selected{% endif %}>Femme</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <input type="number" name="num_jeu" class="form-control" placeholder="Numéro du jeu" min="1" max="13"
+               value="{{ request.args.get('num_jeu', '') }}">
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-outline-dark w-100">Filtrer</button>
+    </div>
+</form>
+
+<!-- Formulaire d'ajout -->
+<h3>Ajouter une cote</h3>
+<form method="post" action="{{ url_for('ajouter') }}" class="row g-3 mb-4" id="ajout-form">
+    <div class="col-md-3">
+        <label for="type" class="form-label">Type</label>
+        <select name="type" id="type" class="form-select" required>
+            <option value="">-- Choisir un type --</option>
+            <option value="gagne_jeu" {% if last_type == 'gagne_jeu' %}selected{% endif %}>Gagne dans le jeu</option>
+            <option value="victoire_set" {% if last_type == 'victoire_set' %}selected{% endif %}>Victoire Set</option>
+            <option value="gagne_6_tiebreak" {% if last_type == 'gagne_6_tiebreak' %}selected{% endif %}>6 jeux Tie-break</option>
+            <option value="victoire_match" {% if last_type == 'victoire_match' %}selected{% endif %}>Victoire Match</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="cote" class="form-label">Cote</label>
+        <input type="text" name="cote" id="cote" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+        <label for="surface" class="form-label">Surface</label>
+        <select name="surface" id="surface" class="form-select">
+            <option value="terre" {% if last_surface == 'terre' %}selected{% endif %}>Terre</option>
+            <option value="dur" {% if last_surface == 'dur' %}selected{% endif %}>Dur</option>
+            <option value="gazon" {% if last_surface == 'gazon' %}selected{% endif %}>Gazon</option>
+        </select>
+    </div>
+
+    <div class="col-md-2" id="num_jeu_container" style="display: none;">
+        <label for="num_jeu" class="form-label">Numéro du jeu</label>
+        <input type="number" name="num_jeu" id="num_jeu" class="form-control" min="1" max="13"
+               value="{{ last_num_jeu }}">
+    </div>
+
+    <div class="col-md-2">
+        <label for="sexe" class="form-label">Sexe</label>
+        <select name="sexe" id="sexe" class="form-select">
+            <option value="homme" {% if last_sexe == 'homme' %}selected{% endif %}>Homme</option>
+            <option value="femme" {% if last_sexe == 'femme' %}selected{% endif %}>Femme</option>
+        </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-success w-100">Ajouter</button>
+    </div>
+</form>
+
+<!-- Alertes -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Tableau des cotes -->
+<h3>Liste des Cotes</h3>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Cote</th>
+            <th>Surface</th>
+            <th>Sexe</th>
+            <th>Numéro Jeu</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cote in cotes %}
+        <tr>
+            <td>{{ cote['id'] }}</td>
+            <td>{{ cote['type'] }}</td>
+            <td>{{ cote['cote'] }}</td>
+            <td>{{ cote['surface'] or 'Terre' }}</td>
+            <td>{{ cote['sexe'] or 'Homme' }}</td>
+            <td>{{ cote['num_jeu'] or '' }}</td>
+            <td>
+                <a href="{{ url_for('modifier', id=cote['id']) }}" class="btn btn-sm btn-outline-primary me-1">Modifier</a>
+                <form action="{{ url_for('supprimer', id=cote['id']) }}" method="post" onsubmit="return confirm('Confirmer la suppression ?')" style="display:inline;">
+                    <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center">Aucune cote trouvée</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const typeSelect = document.getElementById('type');
+    const numJeuContainer = document.getElementById('num_jeu_container');
+    const coteInput = document.getElementById("cote");
+
+    // Affiche ou masque le champ num_jeu selon le type
+    function toggleNumJeu() {
+        if (typeSelect.value === 'gagne_jeu') {
+            numJeuContainer.style.display = 'block';
+        } else {
+            numJeuContainer.style.display = 'none';
+        }
+    }
+
+    typeSelect.addEventListener('change', toggleNumJeu);
+    toggleNumJeu(); // appel initial
+
+    // Toujours remettre la valeur du champ cote à partir de last_cote
+    coteInput.value = "{{ last_cote|default('') }}";
+
+    // Mettre le focus sur cote uniquement si ajout réussi
+    {% if ajout_reussi %}
+        coteInput.focus();
+    {% endif %}
+});
+</script>
+
+
+
+</body>
+</html>

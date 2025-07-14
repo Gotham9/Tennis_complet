@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aperçu du compte – PayPal Clone</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f4f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #003087;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    header h2 {
+      margin: 0;
+    }
+    header .profile-name {
+      font-weight: normal;
+      margin-top: 0.3rem;
+      font-size: 1.1rem;
+      opacity: 0.85;
+    }
+    .error-message {
+      max-width: 900px;
+      margin: 1rem auto 0 auto;
+      background-color: #ffdddd;
+      border: 1px solid #ff5c5c;
+      color: #a70000;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      max-width: 900px;
+    }
+    .error-message i {
+      font-size: 1.5rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 1rem auto 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+    }
+    .balance {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .balance h1 {
+      font-size: 2.5rem;
+      color: #003087;
+    }
+    .quick-actions {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+    }
+    .quick-actions button {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #0070ba;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .transactions {
+      margin-top: 1rem;
+    }
+    .transactions h3 {
+      margin-bottom: 1rem;
+    }
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+    .positive {
+      color: green;
+    }
+    .negative {
+      color: red;
+    }
+    @media (max-width: 600px) {
+      .quick-actions {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>Mon compte PayPal</h2>
+  <div class="profile-name">Sofia MARTINEZ</div>
+</header>
+
+<div class="error-message">
+  <i class="fas fa-exclamation-triangle"></i>
+  <span>Erreur : votre compte est bloqué. Veuillez contacter le support.</span>
+</div>
+
+<div class="container">
+  <section class="balance">
+    <p>Solde disponible</p>
+    <h1>1 234,56 €</h1>
+  </section>
+
+  <section class="quick-actions">
+    <button><i class="fas fa-plus"></i> Ajouter</button>
+    <button><i class="fas fa-upload"></i> Retirer</button>
+    <button><i class="fas fa-paper-plane"></i> Envoyer</button>
+  </section>
+
+  <section class="transactions">
+    <h3>Transactions récentes</h3>
+
+    <div class="transaction-item">
+      <div>
+        <strong>Reçu de Louis</strong><br />
+        <small>6 juillet 2025</small>
+      </div>
+      <div class="positive">1200,00 €</div>
+    </div>
+
+    <div class="transaction-item">
+      <div>
+        <strong>Paiement KFC</strong><br />
+        <small>4 juillet 2025</small>
+      </div>
+      <div class="negative">− 9,99 €</div>
+    </div>
+
+    <div class="transaction-item">
+      <div>
+        <strong>Retrait</strong><br />
+        <small>4 juillet 2025</small>
+      </div>
+      <div class="negative">− 20,00 €</div>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

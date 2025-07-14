@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Fréquence des Cotes par Numéro de Jeu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="container mt-4">
+    <h2>Fréquence des Cotes par Numéro de Jeu (Gagne dans le jeu)</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Retour à l'accueil</a>
+
+    {% for num_jeu, infos in resultats.items() %}
+        <h3>Numéro du jeu : {{ num_jeu }}</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cote</th>
+                    <th>Fréquence</th>
+                    <th>Pourcentage (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cote_info in infos.cotes %}
+                <tr>
+                    <td>{{ cote_info.cote }}</td>
+                    <td>{{ cote_info.freq }}</td>
+                    <td>{{ cote_info.pourcentage }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <canvas id="chart-{{ num_jeu }}" height="150"></canvas>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for num_jeu, infos in resultats.items() %}
+            const ctx{{ loop.index }} = document.getElementById('chart-{{ num_jeu }}').getContext('2d');
+            const labels{{ loop.index }} = [
+                {% for item in infos.cotes %}
+                    "{{ item.cote }}",
+                {% endfor %}
+            ];
+            const data{{ loop.index }} = [
+                {% for item in infos.cotes %}
+                    {{ item.freq }},
+                {% endfor %}
+            ];
+
+            new Chart(ctx{{ loop.index }}, {
+                type: 'bar',
+                data: {
+                    labels: labels{{ loop.index }},
+                    datasets: [{
+                        label: 'Fréquence',
+                        data: data{{ loop.index }},
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Fréquence des cotes pour le jeu ' + {{ num_jeu }}
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+    });
+    </script>
+</body>
+</html>

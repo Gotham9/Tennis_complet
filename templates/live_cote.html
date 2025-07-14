@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enregistrement Côte Gagnante</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="container mt-4">
+
+  <h1 class="mb-4">Enregistrer la Côte Gagnante d'un Jeu</h1>
+
+  <!-- Messages Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  <form method="POST" id="formulaire-cotes">
+  <div id="blocs-container">
+    <div class="row row-cols-lg-auto g-2 align-items-end mb-3 bloc-formulaire">
+      <div class="col">
+        <input type="text" name="cote_joueur1[]" class="form-control" placeholder="Cote J1" required>
+      </div>
+      <div class="col">
+        <input type="text" name="cote_joueur2[]" class="form-control" placeholder="Cote J2" required>
+      </div>
+      <div class="col">
+        <select name="gagnant[]" class="form-select" required>
+          <option value="">Gagnant</option>
+          <option value="1">J1</option>
+          <option value="2">J2</option>
+        </select>
+      </div>
+      <div class="col">
+        <select name="surface[]" class="form-select">
+          {% for surf in surfaces %}
+          <option value="{{ surf }}">{{ surf }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col">
+        <select name="sexe[]" class="form-select">
+          {% for sexe_ in sexes %}
+          <option value="{{ sexe_ }}">{{ sexe_ }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col">
+        <input type="number" name="num_jeu[]" class="form-control" placeholder="Num jeu" min="1" max="13" required>
+      </div>
+      <div class="col">
+        <select name="type[]" class="form-select">
+          {% for key, label in types.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-outline-primary mb-3" id="ajouter-bloc">Ajouter un autre bloc</button>
+  <button type="submit" class="btn btn-success">Enregistrer</button>
+</form>
+
+<!-- Tableau des dernières cotes -->
+<<h3>Dernières côtes enregistrées</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Cote</th>
+            <th>Surface</th>
+            <th>Sexe</th>
+            <th>Numéro de jeu</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cote in cotes %}
+        <tr>
+            <td>{{ cote.id }}</td>
+            <td>{{ cote.type }}</td>
+            <td>{{ cote.cote }}</td>
+            <td>{{ cote.surface }}</td>
+            <td>{{ cote.sexe }}</td>
+            <td>{{ cote.num_jeu or '' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center">Aucune cote enregistrée.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function syncGagnants() {
+    const container = document.getElementById('blocs-container');
+    const selects = container.querySelectorAll('select[name="gagnant[]"]');
+    selects.forEach(select => {
+      select.removeEventListener('change', onGagnantChange);
+      select.addEventListener('change', onGagnantChange);
+    });
+
+    function onGagnantChange() {
+      const val = this.value;
+      selects.forEach(s => s.value = val);
+    }
+  }
+
+  document.getElementById('ajouter-bloc').addEventListener('click', function () {
+    const container = document.getElementById('blocs-container');
+    const blocs = container.getElementsByClassName('bloc-formulaire');
+    const dernierBloc = blocs[blocs.length - 1];
+    const nouveauBloc = dernierBloc.cloneNode(true);
+
+    // Vider uniquement les cotes
+    nouveauBloc.querySelector('input[name="cote_joueur1[]"]').value = '';
+    nouveauBloc.querySelector('input[name="cote_joueur2[]"]').value = '';
+
+    // Récupération des valeurs du dernier bloc
+    const gagnantValue = dernierBloc.querySelector('select[name="gagnant[]"]').value;
+    const surfaceValue = dernierBloc.querySelector('select[name="surface[]"]').value;
+    const sexeValue = dernierBloc.querySelector('select[name="sexe[]"]').value;
+    const numJeuValue = dernierBloc.querySelector('input[name="num_jeu[]"]').value;
+    const typeValue = dernierBloc.querySelector('select[name="type[]"]').value;
+
+    // Appliquer ces valeurs au nouveau bloc
+    nouveauBloc.querySelector('select[name="gagnant[]"]').value = gagnantValue;
+    nouveauBloc.querySelector('select[name="surface[]"]').value = surfaceValue;
+    nouveauBloc.querySelector('select[name="sexe[]"]').value = sexeValue;
+    nouveauBloc.querySelector('input[name="num_jeu[]"]').value = numJeuValue;
+    nouveauBloc.querySelector('select[name="type[]"]').value = typeValue;
+
+    container.appendChild(nouveauBloc);
+
+    // Re-bind gagnants
+    syncGagnants();
+  });
+
+  // Initialiser la synchro gagnants
+  syncGagnants();
+</script>
+
+</body>
+</html>

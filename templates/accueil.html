@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Solde PayPal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .name {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #0070ba; /* bleu PayPal */
+    }
+    .balance {
+      font-size: 2em;
+      font-weight: bold;
+      color: #009cde;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="name" id="userName">Nom utilisateur</div>
+  <div class="balance" id="userBalance">0,00 €</div>
+
+  <script>
+    // Simuler les données récupérées (par ex via API)
+    const user = {
+      name: "Jean Dupont",
+      balance: 1523.45
+    };
+
+    // Afficher dans l'interface
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userBalance').textContent = user.balance.toFixed(2) + " €";
+  </script>
+
+</body>
+</html>

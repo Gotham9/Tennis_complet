@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Statistiques des Côtes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body class="container mt-4">
+    <h2>Statistiques des Côtes</h2>
+
+    <form method="post" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <label for="type1" class="form-label">Type 1</label>
+            <select id="type1" name="type1" class="form-select" required>
+                <option value="">-- Sélectionner --</option>
+                {% for key, label in types.items() %}
+                <option value="{{ key }}" {% if request.form.get('type1') == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label for="type2" class="form-label">Type 2</label>
+            <select id="type2" name="type2" class="form-select" required>
+                <option value="">-- Sélectionner --</option>
+                {% for key, label in types.items() %}
+                <option value="{{ key }}" {% if request.form.get('type2') == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Afficher</button>
+        </div>
+    </form>
+
+    {% if resultats %}
+    <h3>Résultats</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Nombre d'apparitions</th>
+                <th>Total des cotes</th>
+                <th>Pourcentage (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for res in resultats %}
+            <tr>
+                <td>{{ res.label }}</td>
+                <td>{{ res.count }}</td>
+                <td>{{ res.total }}</td>
+                <td>{{ res.pourcentage }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Retour à l'accueil</a>
+</body>
+</html>

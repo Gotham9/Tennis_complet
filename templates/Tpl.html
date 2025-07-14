@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mon compte Transcash</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    /* Couleurs principales Transcash */
+    :root {
+      --red: #d32f2f;
+      --dark-gray: #121212;
+      --gray: #333333;
+      --light-gray: #666666;
+      --background: #1c1c1c;
+      --white: #ffffff;
+      --error-bg: #4d0000;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      color: var(--white);
+    }
+    header {
+      background-color: var(--dark-gray);
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    }
+    header h2 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--red);
+      letter-spacing: 2px;
+    }
+    .profile-name {
+      font-weight: 400;
+      font-size: 1.1rem;
+      opacity: 0.7;
+      margin-top: 0.3rem;
+      color: var(--light-gray);
+    }
+    .error-message {
+      max-width: 900px;
+      margin: 1rem auto 0 auto;
+      background-color: var(--error-bg);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      max-width: 900px;
+      box-sizing: border-box;
+    }
+    .error-message i {
+      font-size: 1.6rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto 3rem auto;
+      background: var(--dark-gray);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      box-sizing: border-box;
+      box-shadow: 0 0 15px rgba(211,47,47,0.5);
+    }
+    .balance {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .balance p {
+      font-size: 1.3rem;
+      color: var(--light-gray);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.1em;
+    }
+    .balance h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--red);
+      margin: 0;
+      letter-spacing: 0.1em;
+    }
+    .quick-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .quick-actions button {
+      flex: 1;
+      background-color: var(--red);
+      border: none;
+      border-radius: 10px;
+      padding: 15px 0;
+      color: var(--white);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(211,47,47,0.6);
+    }
+    .quick-actions button:hover {
+      background-color: #b52828;
+      box-shadow: 0 6px 12px rgba(181,40,40,0.8);
+    }
+    .transactions h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      font-weight: 800;
+      border-bottom: 3px solid var(--red);
+      padding-bottom: 0.3rem;
+      letter-spacing: 0.1em;
+    }
+    .transaction-item {
+      display: grid;
+      grid-template-columns: 2.5fr 1.2fr 1.3fr 1.3fr;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--gray);
+      font-size: 1.05rem;
+      align-items: center;
+    }
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+    .transaction-type {
+      font-weight: 700;
+      color: var(--white);
+    }
+    .transaction-date {
+      color: var(--light-gray);
+      font-style: italic;
+    }
+    .transaction-amount {
+      font-weight: 800;
+      text-align: right;
+      letter-spacing: 0.05em;
+    }
+    .positive {
+      color: #66ff66;
+    }
+    .negative {
+      color: #ff6666;
+    }
+    .transaction-status {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.8rem;
+      border-radius: 18px;
+      color: var(--white);
+      width: fit-content;
+      margin-left: auto;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+    .status-success {
+      background-color: #4caf50;
+      box-shadow: 0 0 5px #4caf50aa;
+    }
+    .status-pending {
+      background-color: #ff9800;
+      color: #222;
+      box-shadow: 0 0 5px #ff9800aa;
+    }
+    .status-failed {
+      background-color: #f44336;
+      box-shadow: 0 0 5px #f44336aa;
+    }
+
+    @media (max-width: 720px) {
+      .quick-actions {
+        flex-direction: column;
+      }
+      .quick-actions button {
+        width: 100%;
+      }
+      .transaction-item {
+        grid-template-columns: 1fr 1fr;
+        grid-row-gap: 6px;
+        font-size: 0.95rem;
+      }
+      .transaction-amount,
+      .transaction-status {
+        grid-column: 2 / 3;
+        text-align: right;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Transcash</h2>
+    <div class="profile-name">Sofia MARTINEZ</div>
+  </header>
+
+  <div class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Erreur : votre carte est bloquée. Veuillez contacter le support.</span>
+  </div>
+
+  <div class="container">
+    <section class="balance">
+      <p>Solde disponible</p>
+      <h1>1 234,56 €</h1>
+    </section>
+
+    <section class="quick-actions">
+      <button><i class="fas fa-plus-circle"></i> Recharger</button>
+      <button><i class="fas fa-credit-card"></i> Payer</button>
+      <button><i class="fas fa-paper-plane"></i> Transférer</button>
+    </section>
+
+    <section class="transactions">
+      <h3>Transactions récentes</h3>
+
+      <div class="transaction-item">
+        <div class="transaction-type">Rechargement en point relais</div>
+        <div class="transaction-date">7 juillet 2025</div>
+        <div class="transaction-amount positive">+ 200,00 €</div>
+        <div class="transaction-status status-success">Terminé</div>
+      </div>
+
+      <div class="transaction-item">
+        <div class="transaction-type">Paiement magasin</div>
+        <div class="transaction-date">5 juillet 2025</div>
+        <div class="transaction-amount negative">− 35,75 €</div>
+        <div class="transaction-status status-success">Terminé</div>
+      </div>
+
+      <div class="transaction-item">
+        <div class="transaction-type">Transfert vers un proche</div>
+        <div class="transaction-date">4 juillet 2025</div>
+        <div class="transaction-amount negative">− 50,00 €</div>
+        <div class="transaction-status status-pending">En attente</div>
+      </div>
+
+      <div class="transaction-item">
+        <div class="transaction-type">Paiement refusé</div>
+        <div class="transaction-date">2 juillet 2025</div>
+        <div class="transaction-amount negative">− 15,00 €</div>
+        <div class="transaction-status status-failed">Échoué</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

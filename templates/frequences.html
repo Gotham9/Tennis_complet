@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Fréquence des Cotes par Type</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="container mt-4">
+    <h2>Fréquence des Cotes par Type</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Retour à l'accueil</a>
+
+    <!-- Formulaire de filtre -->
+    <form method="get" action="{{ url_for('frequences') }}" class="row g-3 mb-4">
+
+      <div class="col-md-3">
+        <label for="type" class="form-label">Type</label>
+        <select name="type" id="type-select" class="form-select" required>
+          <option value="">-- Choisir un type --</option>
+          <option value="gagne_jeu" {% if request.args.get('type') == 'gagne_jeu' %}selected{% endif %}>Gagne dans le jeu</option>
+          <option value="victoire_set" {% if request.args.get('type') == 'victoire_set' %}selected{% endif %}>Victoire Set</option>
+          <option value="gagne_6_tiebreak" {% if request.args.get('type') == 'gagne_6_tiebreak' %}selected{% endif %}>6 jeux Tie-break</option>
+          <option value="victoire_match" {% if request.args.get('type') == 'victoire_match' %}selected{% endif %}>Victoire Match</option>
+        </select>
+      </div>
+
+      <div class="col-md-2" id="num-jeu-container" style="display:none;">
+        <label for="num_jeu" class="form-label">Numéro du jeu</label>
+        <input type="number" min="1" max="13" name="num_jeu" id="num_jeu" class="form-control" value="{{ request.args.get('num_jeu', '') }}">
+      </div>
+
+      <div class="col-md-3">
+        <label for="surface" class="form-label">Surface</label>
+        <select name="surface" id="surface-select" class="form-select">
+          <option value="">-- Tous --</option>
+          <option value="terre" {% if request.args.get('surface') == 'terre' %}selected{% endif %}>Terre</option>
+          <option value="dur" {% if request.args.get('surface') == 'dur' %}selected{% endif %}>Dur</option>
+          <option value="gazon" {% if request.args.get('surface') == 'gazon' %}selected{% endif %}>Gazon</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label for="sexe" class="form-label">Sexe</label>
+        <select name="sexe" id="sexe-select" class="form-select">
+          <option value="">-- Tous --</option>
+          <option value="homme" {% if request.args.get('sexe') == 'homme' %}selected{% endif %}>Homme</option>
+          <option value="femme" {% if request.args.get('sexe') == 'femme' %}selected{% endif %}>Femme</option>
+        </select>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+      </div>
+    </form>
+
+    <!-- Résultats -->
+    {% for type, infos in resultats.items() %}
+        <h4 class="mt-4">
+            {% if type == 'gagne_jeu' %}
+                Gagne dans le jeu
+            {% elif type == 'victoire_set' %}
+                Victoire Set
+            {% elif type == 'gagne_6_tiebreak' %}
+                Qui gagnera après 6 jeux dans le tie-break
+            {% else %}
+                {{ type }}
+            {% endif %}
+        </h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cote</th>
+                    <th>Fréquence</th>
+                    <th>Pourcentage (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cote_info in infos.cotes %}
+                <tr>
+                    <td>{{ cote_info.cote }}</td>
+                    <td>{{ cote_info.freq }}</td>
+                    <td>{{ cote_info.pourcentage }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <canvas id="chart-{{ type }}" height="150"></canvas>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function toggleNumJeu() {
+        const typeSelect = document.getElementById('type-select');
+        const numJeuContainer = document.getElementById('num-jeu-container');
+        if (typeSelect.value === 'gagne_jeu') {
+          numJeuContainer.style.display = 'block';
+        } else {
+          numJeuContainer.style.display = 'none';
+          document.getElementById('num_jeu').value = '';
+        }
+      }
+
+      document.getElementById('type-select').addEventListener('change', toggleNumJeu);
+
+      // Afficher ou cacher au chargement selon la valeur actuelle
+      toggleNumJeu();
+
+      document.addEventListener('DOMContentLoaded', function() {
+          {% for type, infos in resultats.items() %}
+          const ctx{{ loop.index }} = document.getElementById('chart-{{ type }}').getContext('2d');
+          const labels{{ loop.index }} = [
+              {% for item in infos.cotes %}
+                  "{{ item.cote }}",
+              {% endfor %}
+          ];
+          const data{{ loop.index }} = [
+              {% for item in infos.cotes %}
+                  {{ item.freq }},
+              {% endfor %}
+          ];
+
+          new Chart(ctx{{ loop.index }}, {
+              type: 'bar',
+              data: {
+                  labels: labels{{ loop.index }},
+                  datasets: [{
+                      label: 'Fréquence',
+                      data: data{{ loop.index }},
+                      backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                      borderColor: 'rgba(54, 162, 235, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                          ticks: { precision: 0 }
+                      }
+                  },
+                  plugins: {
+                      legend: { display: false },
+                      title: {
+                          display: true,
+                          text: 'Fréquence des cotes pour {{ type }}'
+                      }
+                  }
+              }
+          });
+          {% endfor %}
+      });
+    </script>
+</body>
+</html>

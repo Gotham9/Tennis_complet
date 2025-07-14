@@ -1,0 +1,75 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Cote</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+    <h2>Modifier #{{ cote['id'] }}</h2>
+
+    <form method="post" class="row g-3">
+
+        <div class="col-md-3">
+            <label for="type" class="form-label">Type</label>
+            <select name="type" id="type" class="form-select" required>
+                <option value="">-- Choisir un type --</option>
+                <option value="gagne_jeu" {% if cote['type'] == 'gagne_jeu' %}selected{% endif %}>Gagne dans le jeu</option>
+                <option value="victoire_set" {% if cote['type'] == 'victoire_set' %}selected{% endif %}>Victoire Set</option>
+                <option value="gagne_6_tiebreak" {% if cote['type'] == 'gagne_6_tiebreak' %}selected{% endif %}>6 jeux Tie-break</option>
+                <option value="victoire_match" {% if cote['type'] == 'victoire_match' %}selected{% endif %}>Victoire Match</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="cote" class="form-label">Cote</label>
+            <input type="text" name="cote" id="cote" class="form-control" value="{{ cote['cote'] }}" required>
+        </div>
+
+        <div class="col-md-3">
+            <label for="surface" class="form-label">Surface</label>
+            <select name="surface" id="surface" class="form-select" required>
+                <option value="terre" {% if cote['surface'] == 'terre' %}selected{% endif %}>Terre</option>
+                <option value="dur" {% if cote['surface'] == 'dur' %}selected{% endif %}>Dur</option>
+                <option value="gazon" {% if cote['surface'] == 'gazon' %}selected{% endif %}>Gazon</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="sexe" class="form-label">Sexe</label>
+            <select name="sexe" id="sexe" class="form-select" required>
+                <option value="homme" {% if cote['sexe'] == 'homme' %}selected{% endif %}>Homme</option>
+                <option value="femme" {% if cote['sexe'] == 'femme' %}selected{% endif %}>Femme</option>
+            </select>
+        </div>
+
+        <div class="col-md-2" id="num-jeu-container" style="display:none;">
+            <label for="num_jeu" class="form-label">Numéro du jeu</label>
+            <input type="number" name="num_jeu" id="num_jeu" class="form-control" min="1" max="13" value="{{ cote['num_jeu'] or '' }}">
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Modifier</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary ms-2">Annuler</a>
+        </div>
+    </form>
+
+    <script>
+    function toggleNumJeu() {
+        const typeSelect = document.getElementById('type');
+        const numJeuContainer = document.getElementById('num-jeu-container');
+        if (typeSelect.value === 'gagne_jeu') {
+            numJeuContainer.style.display = 'block';
+        } else {
+            numJeuContainer.style.display = 'none';
+            document.getElementById('num_jeu').value = '';
+        }
+    }
+
+    document.getElementById('type').addEventListener('change', toggleNumJeu);
+
+    // Affiche ou cache le champ au chargement selon la valeur actuelle
+    toggleNumJeu();
+    </script>
+</body>
+</html>
